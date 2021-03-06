@@ -1,21 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 [Serializable]
 public class Category
 {
-    public int id;
+    public int wordCount;
     public string name;
+    public List<string> words = new List<string>();
 
-    public Category(int id, string name)
+    public Category(string name)
     {
-        this.id = id;
+        this.wordCount = 0;
         this.name = name;
     }
-    public int getID()
+    public void AddWord(string word)
     {
-        return this.id;
+        words.Add(word);
+        this.wordCount += 1;
     }
-    public string getName()
+    public int GetWordCount()
+    {
+        return this.wordCount;
+    }
+    public string GetCategoryName()
     {
         return this.name;
     }
