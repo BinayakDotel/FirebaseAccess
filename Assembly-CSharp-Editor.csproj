@@ -59,6 +59,18 @@
     <Compile Include="Assets\Source\Aot\Editor\fsAotConfigurationEditor.cs" />
   </ItemGroup>
   <ItemGroup>
+     <None Include="Assets\ExternalDependencyManager\Editor\Google.VersionHandlerImpl_v1.2.164.dll" />
+     <None Include="Assets\ExternalDependencyManager\Editor\Google.IOSResolver_v1.2.164.dll" />
+     <None Include="Assets\ExternalDependencyManager\Editor\Google.JarResolver_v1.2.164.dll" />
+     <None Include="Assets\Firebase\Editor\FirebaseAuth_version-7.1.0_manifest.txt" />
+     <None Include="Assets\Firebase\Editor\FirebaseDatabase_version-7.1.0_manifest.txt" />
+     <None Include="Assets\Firebase\Editor\AuthDependencies.xml" />
+     <None Include="Assets\Firebase\Editor\AppDependencies.xml" />
+     <None Include="Assets\ExternalDependencyManager\Editor\Google.VersionHandler.dll" />
+     <None Include="Assets\ExternalDependencyManager\Editor\external-dependency-manager_version-1.2.164_manifest.txt" />
+     <None Include="Assets\ExternalDependencyManager\Editor\Google.PackageManagerResolver_v1.2.164.dll" />
+     <None Include="Assets\Firebase\Editor\DatabaseDependencies.xml" />
+     <None Include="Assets\Firebase\Editor\Firebase.Editor.dll" />
     <Reference Include="UnityEngine">
       <HintPath>E:\Unity\2019.3.0f6\2020.2.1f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -296,11 +308,50 @@
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Editor\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data">
-      <HintPath>Assets\Files\DLL\MySql.Data.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Library\PackageCache\com.unity.ext.nunit@1.0.5\net35\unity-custom\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.VersionHandlerImpl_v1.2.164">
+      <HintPath>Assets\ExternalDependencyManager\Editor\Google.VersionHandlerImpl_v1.2.164.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.VersionHandler">
+      <HintPath>Assets\ExternalDependencyManager\Editor\Google.VersionHandler.dll</HintPath>
+    </Reference>
+    <Reference Include="Firebase.App">
+      <HintPath>Assets\Firebase\Plugins\Firebase.App.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.JarResolver_v1.2.164">
+      <HintPath>Assets\ExternalDependencyManager\Editor\Google.JarResolver_v1.2.164.dll</HintPath>
+    </Reference>
+    <Reference Include="Firebase.Editor">
+      <HintPath>Assets\Firebase\Editor\Firebase.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Firebase.Database">
+      <HintPath>Assets\Firebase\Plugins\Firebase.Database.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.PackageManagerResolver_v1.2.164">
+      <HintPath>Assets\ExternalDependencyManager\Editor\Google.PackageManagerResolver_v1.2.164.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.IOSResolver_v1.2.164">
+      <HintPath>Assets\ExternalDependencyManager\Editor\Google.IOSResolver_v1.2.164.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Tasks">
+      <HintPath>Assets\Parse\Plugins\dotNet45\Unity.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Firebase.TaskExtension">
+      <HintPath>Assets\Firebase\Plugins\Firebase.TaskExtension.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.MiniJson">
+      <HintPath>Assets\Firebase\Plugins\Google.MiniJson.dll</HintPath>
+    </Reference>
+    <Reference Include="Firebase.Platform">
+      <HintPath>Assets\Firebase\Plugins\Firebase.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Compat">
+      <HintPath>Assets\Parse\Plugins\dotNet45\Unity.Compat.dll</HintPath>
+    </Reference>
+    <Reference Include="Firebase.Auth">
+      <HintPath>Assets\Firebase\Plugins\Firebase.Auth.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>E:\Unity\2019.3.0f6\2020.2.1f1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>

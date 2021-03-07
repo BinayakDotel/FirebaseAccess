@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "155394680037",
+    "firebase_url": "https://word-search-aed56-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "word-search-aed56",
+    "storage_bucket": "word-search-aed56.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:155394680037:android:b342ff8225ee7ba51c200c",
+        "android_client_info": {
+          "package_name": "com.ashtavclients.wordsearch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "155394680037-jf7d388u25n81uct4eg3c0gkchhc8suv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgH4HixD7YT7y9mmjbxphaUQFAO1CeT8U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "155394680037-jf7d388u25n81uct4eg3c0gkchhc8suv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "155394680037-5b9t8idjtbf8ua2oou969tme2ii4d2i0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ashtavclients.wordsearch"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

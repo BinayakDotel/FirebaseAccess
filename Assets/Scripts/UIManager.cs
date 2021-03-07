@@ -12,8 +12,6 @@ public class UIManager : MonoBehaviour
     public GameObject WordListUI;
     public GameObject NumberOfWordsUI;
 
-    FirebaseAccess firebaseAccess;
-
     //Generate buttons as per the firebase category list
     public GameObject content;
     public GameObject categoryButton;
@@ -35,17 +33,15 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private List<GameObject> wordList = new List<GameObject>();
+    public List<int> displayWord = new List<int>();
 
     public void Start()
     {
         currentCategory = "";
         Status.text = "";
-        firebaseAccess = FindObjectOfType<FirebaseAccess>();
         CategoryListUI.SetActive(true);
         WordListUI.SetActive(false);
         NumberOfWordsUI.SetActive(false);
-
-        GenerateButton(PlayerPrefs.GetInt("categoryCount"));
     }
     public void AddCategory()
     {
@@ -61,7 +57,6 @@ public class UIManager : MonoBehaviour
     }
     public void LoadNumberOfWordsUI()
     {
-        print("WORKING");
         CategoryListUI.SetActive(false);
         WordListUI.SetActive(false);
         NumberOfWordsUI.SetActive(true);
@@ -73,26 +68,18 @@ public class UIManager : MonoBehaviour
         WordListUI.SetActive(true);
         NumberOfWordsUI.SetActive(false);
     }
-    /* Adding category to the firebase database */
-    /*public void SaveData()
-    {
-        if (category_name.text.Equals(""))
-        {
-            SubmitStatus.text = "Enter Something";
-            return;
-        }
-        SubmitStatus.text=firebaseAccess.Post(category_name.text.ToUpper());
-    }*/
     public void ClearButton()
     {
         for(int i = 0; i < categoryButtonList.Count; i++)
         {
             Destroy(categoryButtonList[i]);
         }
+        categoryButtonList.Clear();
     }
     public void ClearLocalData()
     {
         PlayerPrefs.DeleteAll();
+        ClearButton();
     }
     public void ClearWord()
     {
@@ -100,20 +87,21 @@ public class UIManager : MonoBehaviour
         {
             Destroy(wordList[i]);
         }
+        wordList.Clear();
         WordStatus.text = "";
     }
     public void DrawWords(int limit)
     {
         LoadWordListUI();
         GenerateWordList(limit);
-
     }
     //GENERATE BUTTONS AS PER THE DATA STORE LOCALLY and ALSO UPDATES IF REFRESHED
-    public void GenerateButton(int count)
+    public void GenerateButton()
     {
+        print("BUTTONS GENERATED");
         ClearButton();
-        Status.text = "SUCCESS";
-        for (int i = 0; i < count; i++)
+        int count = PlayerPrefs.GetInt("totalCategory");
+        for (int i = 1; i <= count; i++)
         {
                 GameObject newButton = Instantiate(categoryButton) as GameObject;
                 newButton.name = PlayerPrefs.GetString($"Category_{i}".ToString());
@@ -126,7 +114,6 @@ public class UIManager : MonoBehaviour
                 newButton.transform.SetParent(content.transform, true);
                 categoryButtonList.Add(newButton);
         }
-
         Status.text = "";
     }
     public void GenerateWordList(int limit)
@@ -135,9 +122,18 @@ public class UIManager : MonoBehaviour
         for(int i = 1; i <= limit; i++)
         {
             GameObject wordListText = Instantiate(wordText) as GameObject;
-            wordListText.GetComponent<Text>().text = PlayerPrefs.GetString($"{currentCategory}_{Random.Range(1, totalwords)}");
+
+            int index = Random.Range(1, totalwords);
+            while(displayWord.Contains(index))
+            {
+                index = Random.Range(1, totalwords);
+            }
+            displayWord.Add(index);
+            wordListText.GetComponent<Text>().text = PlayerPrefs.GetString($"{currentCategory}_word_{index}");
+            //wordListText.GetComponent<Text>().text = index.ToString();
             wordListText.transform.SetParent(wordContent.transform, true);
             wordList.Add(wordListText);
-        }   
+        }
+        displayWord.Clear();
     }
 }

@@ -1,126 +1,159 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Proyecto26;
 using UnityEditor;
-using UnityEngine.UI;
-using FullSerializer;
+using Firebase.Database;
+using Firebase.Extensions;
 
 public class FirebaseAccess : MonoBehaviour
 {
-    private readonly string basePath = "https://unityprojects-bd0f1-default-rtdb.firebaseio.com/Category/";
+    private DatabaseReference databaseReference;
+    private DatabaseReference _ref;
+    UIManager uIManager;
+    private bool checkForConnection;
 
-	Category category;
-	private List<int> id = new List<int>();
-	private static fsSerializer serializer = new fsSerializer();
-
-	private UIManager uIManager;
-
-	//Checking data update in firebase
-	private float actualTime;
-	private float timeInterval;
-	private bool updatedOnce = false;
-
-    public void Start()
+    private void Start()
     {
-		timeInterval = 10.0f;
-		actualTime = timeInterval;
-		uIManager = FindObjectOfType<UIManager>();
-		GetAllCategory();
-	}
-    /*public string Post(string category_name)
-	{
-		//Checking internet connection
-        if (!CheckInternet())
-        {
-			return "ERROR...CHECK INTERNET";
-        }
-		category = new Category(category_name);
-		category.AddWord("Nepal".ToUpper());
+        checkForConnection = false;
+        databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+        /*_ref = databaseReference.GetReference("words").Child("Catergories");
+        _ref.ValueChanged += HandleValueChanged;*/
 
-		//id.Add(category.getID());
-		RestClient.Put<Category>($"{basePath}{category.GetCategoryName()}.json", category)
-			.Then(
-			response =>
-            {
-				return "DATA SUBMITTED";
-			});
-		return "DATA SUBMITTED";
-	}*/
+        uIManager = FindObjectOfType<UIManager>();
+        uIManager.GenerateButton();
+        Refresh();
+    }
     private void Update()
     {
-		if (CheckInternet())
-		{
-            if (!updatedOnce)
-            {
-				GetAllCategory();
-				updatedOnce = true;
-            }
-            else
-            {
-				actualTime = actualTime - Time.deltaTime;
-
-				if (actualTime <= 0.0f)
-				{
-					GetAllCategory();
-					actualTime = timeInterval;
-				}
-			}
-		}
-		else print("NOT WORKING");
-	}
-    public void GetAllCategory()
+        if (checkForConnection)
+        {
+            Refresh();
+            checkForConnection = false;
+        }
+    }
+    /*public void RetrieveDatas()
     {
-		uIManager.Status.text = "LOADING...";
         if (!CheckInternet())
         {
-			//uIManager.Status.text = "ERROR...CHECK INTERNET";
-			StartCoroutine(NoInternetMessage(2));
-			return;
-		}
-		StartCoroutine(NoInternetMessage(0));
-		RestClient.Get($"{basePath}.json").Then(response =>
-		{
-			var responseJson = response.Text;
-			var data = fsJsonParser.Parse(responseJson);
-			object deserialized = null;
-			serializer.TryDeserialize(data, typeof(Dictionary<string, Category>), ref deserialized);
+            //StartCoroutine(NoInternet(2));
+            return;
+        }
+        FirebaseDatabase.DefaultInstance.GetReference("words").Child("Catergories").GetValueAsync().ContinueWithOnMainThread(
+                    task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                            print("ERROR");
+                        }
+                        else if (task.IsCanceled)
+                        {
+                            print("CANCELLED");
+                        }
+                        else if (task.IsCompleted)
+                        {
+                            DataSnapshot snapshot = task.Result;
 
-			var categories = deserialized as Dictionary<string, Category>;
+                            int totalCategory = int.Parse(snapshot.ChildrenCount.ToString());
+                            PlayerPrefs.SetInt("totalCategory",totalCategory);
 
-			int categoryCount = 0;
-			foreach (var category in categories)
-            {
-				PlayerPrefs.SetString($"Category_{categoryCount}", category.Value.name);
-				PlayerPrefs.SetInt($"categoryCount", ++categoryCount);
-				PlayerPrefs.SetInt($"{category.Value.name}_wordCount", category.Value.wordCount);
-
-				for (int i = 0; i < category.Value.wordCount; i++)
-				{
-					PlayerPrefs.SetString($"{category.Value.name}_{i}", category.Value.words[i]);
-				}
-			}
-			//Create buttons on runtime as per the categories
-			uIManager.GenerateButton(PlayerPrefs.GetInt($"categoryCount"));
-		});
+                            //For getting all the Categories stored in the firebase
+                            int categoryIndex=1;
+                            int wordsIndex = 1;
+                            foreach (var category in snapshot.Children)
+                            {
+                                PlayerPrefs.SetString($"Category_{categoryIndex}", category.Key);
+                                foreach (var id in category.Children)
+                                {
+                                    //Words
+                                    PlayerPrefs.SetString($"{category.Key}_word_{wordsIndex}", id.Child("name").Value.ToString());
+                                    PlayerPrefs.SetInt($"{category.Key}_wordCount",wordsIndex);
+                                    ++wordsIndex;
+                                }
+                                wordsIndex = 1;
+                                ++categoryIndex;
+                            }
+                        }
+                    }
+                 );
+        uIManager.GenerateButton();
+    }*/
+    public void Refresh()
+    {
+        if (!CheckInternet())
+        {
+            StartCoroutine(NoInternet(1));
+            return;
+        }
+        FirebaseDatabase.DefaultInstance.GetReference("words").Child("Catergories").ValueChanged += FirebaseAccess_ValueChanged;
     }
-	/*
-	 * Check whether internet is connected or not 
-	 * returns true if connected
-	 */
-	public bool CheckInternet()
+
+    private void FirebaseAccess_ValueChanged(object sender, ValueChangedEventArgs e)
     {
-		if (Application.internetReachability == NetworkReachability.NotReachable)
-		{
-			Debug.Log("ERROR...CHECK INTERNET");
-			return false;
-		}
-		return true;
-	}
-	IEnumerator NoInternetMessage(int time)
+        int totalCategory = int.Parse(e.Snapshot.ChildrenCount.ToString());
+        print($"totalCategory::{totalCategory}");
+
+        PlayerPrefs.SetInt("totalCategory", totalCategory);
+
+        //For getting all the Categories stored in the firebase
+        int categoryIndex = 1;
+        int wordsIndex = 1;
+        foreach (var category in e.Snapshot.Children)
+        {
+            PlayerPrefs.SetString($"Category_{categoryIndex}", category.Key);
+            foreach (var id in category.Children)
+            {
+                //Words
+                PlayerPrefs.SetString($"{category.Key}_word_{wordsIndex}", id.Child("name").Value.ToString());
+                PlayerPrefs.SetInt($"{category.Key}_wordCount", wordsIndex);
+                ++wordsIndex;
+            }
+            wordsIndex = 1;
+            ++categoryIndex;
+        }
+        uIManager.GenerateButton();
+    }
+    private bool CheckInternet()
     {
-		yield return new WaitForSeconds(time);
-		if (PlayerPrefs.GetInt($"categoryCount") == 0) uIManager.Status.text = "ERROR! CHECK INTERNET CONNECTION";
-		else uIManager.Status.text = "";
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            Debug.Log("Error. Check internet connection!");
+            return false;
+        }
+        return true;
+    }
+
+    IEnumerator NoInternet(int time)
+    {
+        yield return new WaitForSeconds(time);
+        if (PlayerPrefs.GetInt($"totalCategory") == 0) {
+            uIManager.Status.text = "ERROR! CHECK INTERNET CONNECTION";
+            checkForConnection = true;
+        }
+        else uIManager.Status.text = "";
     }
 }
+
+        /*void HandleValueChanged(object sender, ValueChangedEventArgs args)
+        {
+            if (args.DatabaseError != null)
+            {
+                Debug.LogError(args.DatabaseError.Message);
+                return;
+            }
+            //RetrieveDatas();
+            print("REFRESH");
+        }
+        private bool CheckInternet()
+        {
+            if (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+               Debug.Log("Error. Check internet connection!");
+               return false;
+            }
+            return true;
+        }
+        private void OnDestroy()
+        {
+            databaseReference = null;
+            _ref = null;
+        }*/
