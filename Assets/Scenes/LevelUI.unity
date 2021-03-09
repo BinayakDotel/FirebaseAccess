@@ -206,7 +206,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 432703863}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9985253
+  m_Size: 0.9871812
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -936,7 +936,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -2.005093, y: 0.0007637426}
+  m_AnchoredPosition: {x: -2.005093, y: 0.00017278965}
   m_SizeDelta: {x: 2.005, y: 820.87}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &522071696
@@ -2095,6 +2095,9 @@ MonoBehaviour:
   NumberOfWordsUI: {fileID: 400185957}
   content: {fileID: 1713746937}
   categoryButton: {fileID: 2160522907476035100, guid: 5fcca399bde1ad141bfba6b73d32f52a, type: 3}
+  category1:
+    name: 
+    words: []
   categoryButtonList: []
   wordContent: {fileID: 522071694}
   wordText: {fileID: 5504954418191742272, guid: 494d51f814c254449b6158eb972ec78e, type: 3}

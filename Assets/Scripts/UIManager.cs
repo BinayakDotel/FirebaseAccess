@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
+using SimpleJSON;
 
 public class UIManager : MonoBehaviour
 {
@@ -34,6 +36,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private List<GameObject> wordList = new List<GameObject>();
     public List<int> displayWord = new List<int>();
+
+    private List<string> loadedCategories = new List<string>();
+    private List<string> loadedWords = new List<string>();
 
     public void Start()
     {
@@ -98,42 +103,87 @@ public class UIManager : MonoBehaviour
     //GENERATE BUTTONS AS PER THE DATA STORE LOCALLY and ALSO UPDATES IF REFRESHED
     public void GenerateButton()
     {
-        print("BUTTONS GENERATED");
         ClearButton();
-        int count = PlayerPrefs.GetInt("totalCategory");
-        for (int i = 1; i <= count; i++)
+        loadedCategories.Clear();
+
+        string filePath = $"{Application.persistentDataPath}/wordSearch.json";
+
+        if (!File.Exists(filePath))
         {
-                GameObject newButton = Instantiate(categoryButton) as GameObject;
-                newButton.name = PlayerPrefs.GetString($"Category_{i}".ToString());
-                Text text = newButton.GetComponentInChildren<Text>();
-                text.text = newButton.name;
-                newButton.GetComponent<Button>().onClick.AddListener(() => {
-                    currentCategory = newButton.name;
-                    LoadNumberOfWordsUI();
-                });
-                newButton.transform.SetParent(content.transform, true);
-                categoryButtonList.Add(newButton);
+            print("FILE NOT FOUND!");
+            return;
+        }
+        string data = File.ReadAllText(filePath);
+        JSONObject jsonData = (JSONObject)JSON.Parse(data);
+
+        var categories = jsonData["Catergories"];
+
+        //int word = 0;
+        foreach (var category in categories)
+        {
+            loadedCategories.Add(category.Key);
+        }
+        int count = loadedCategories.Count;
+        for (int i = 0; i < count; i++)
+        {
+            GameObject newButton = Instantiate(categoryButton) as GameObject;
+
+            newButton.name = loadedCategories[i];
+
+            //newButton.name = PlayerPrefs.GetString($"Category_{i}".ToString());
+            Text text = newButton.GetComponentInChildren<Text>();
+            text.text = newButton.name;
+            newButton.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                currentCategory = newButton.name;
+                LoadNumberOfWordsUI();
+            });
+            newButton.transform.SetParent(content.transform, true);
+            categoryButtonList.Add(newButton);
         }
         Status.text = "";
     }
     public void GenerateWordList(int limit)
     {
+        print("GENERATE WORD");
         int totalwords = PlayerPrefs.GetInt($"{currentCategory}_wordCount");
-        for(int i = 1; i <= limit; i++)
+
+        string filePath = $"{Application.persistentDataPath}/wordSearch.json";
+
+        if (!File.Exists(filePath))
+        {
+            print("FILE NOT FOUND!");
+            return;
+        }
+        string data = File.ReadAllText(filePath);
+        JSONObject jsonData = (JSONObject)JSON.Parse(data);
+
+        var categories = jsonData["Catergories"];
+
+        int wordIndex = 0;
+        int totalCount = PlayerPrefs.GetInt($"{currentCategory}_wordCount");
+        while (wordIndex < totalCount)
+        {
+            var name = categories[currentCategory][wordIndex]["name"];
+            loadedWords.Add(name);
+            ++wordIndex;
+        }
+
+        for (int i = 1; i <= limit; i++)
         {
             GameObject wordListText = Instantiate(wordText) as GameObject;
 
-            int index = Random.Range(1, totalwords);
+            int index = Random.Range(1, loadedWords.Count);
             while(displayWord.Contains(index))
             {
                 index = Random.Range(1, totalwords);
             }
             displayWord.Add(index);
-            wordListText.GetComponent<Text>().text = PlayerPrefs.GetString($"{currentCategory}_word_{index}");
-            //wordListText.GetComponent<Text>().text = index.ToString();
+            wordListText.GetComponent<Text>().text = loadedWords[index];
             wordListText.transform.SetParent(wordContent.transform, true);
             wordList.Add(wordListText);
         }
         displayWord.Clear();
+        loadedWords.Clear();
     }
 }

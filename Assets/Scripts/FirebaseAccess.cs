@@ -4,20 +4,19 @@ using UnityEngine;
 using UnityEditor;
 using Firebase.Database;
 using Firebase.Extensions;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class FirebaseAccess : MonoBehaviour
 {
     private DatabaseReference databaseReference;
-    private DatabaseReference _ref;
     UIManager uIManager;
     private bool checkForConnection;
 
     private void Start()
     {
-        checkForConnection = false;
+        checkForConnection = true;
         databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
-        /*_ref = databaseReference.GetReference("words").Child("Catergories");
-        _ref.ValueChanged += HandleValueChanged;*/
 
         uIManager = FindObjectOfType<UIManager>();
         uIManager.GenerateButton();
@@ -27,8 +26,12 @@ public class FirebaseAccess : MonoBehaviour
     {
         if (checkForConnection)
         {
-            Refresh();
-            checkForConnection = false;
+            print("CHECKING FOR CONNECTION");
+            if (CheckInternet())
+            {
+                Refresh();
+                checkForConnection = false;
+            }
         }
     }
     /*public void RetrieveDatas()
@@ -84,26 +87,36 @@ public class FirebaseAccess : MonoBehaviour
             StartCoroutine(NoInternet(1));
             return;
         }
-        FirebaseDatabase.DefaultInstance.GetReference("words").Child("Catergories").ValueChanged += FirebaseAccess_ValueChanged;
+        FirebaseDatabase.DefaultInstance.GetReference("words").ValueChanged += FirebaseAccess_ValueChanged;
     }
 
     private void FirebaseAccess_ValueChanged(object sender, ValueChangedEventArgs e)
     {
-        int totalCategory = int.Parse(e.Snapshot.ChildrenCount.ToString());
-        print($"totalCategory::{totalCategory}");
+        string filePath = $"{Application.persistentDataPath}/wordSearch.json";
+
+        try
+        {
+            File.WriteAllText(filePath, e.Snapshot.GetRawJsonValue());
+            print("SAVED TO LOCAL DB");
+        }
+        catch
+        {
+            print("SOMETHING WENT WRONG");
+        }
+
+        int totalCategory = int.Parse(e.Snapshot.Child("Catergories").ChildrenCount.ToString());
 
         PlayerPrefs.SetInt("totalCategory", totalCategory);
 
         //For getting all the Categories stored in the firebase
         int categoryIndex = 1;
         int wordsIndex = 1;
-        foreach (var category in e.Snapshot.Children)
+        foreach (var category in e.Snapshot.Child("Catergories").Children)
         {
             PlayerPrefs.SetString($"Category_{categoryIndex}", category.Key);
             foreach (var id in category.Children)
             {
                 //Words
-                PlayerPrefs.SetString($"{category.Key}_word_{wordsIndex}", id.Child("name").Value.ToString());
                 PlayerPrefs.SetInt($"{category.Key}_wordCount", wordsIndex);
                 ++wordsIndex;
             }
@@ -117,6 +130,7 @@ public class FirebaseAccess : MonoBehaviour
         if (Application.internetReachability == NetworkReachability.NotReachable)
         {
             Debug.Log("Error. Check internet connection!");
+            checkForConnection = true;
             return false;
         }
         return true;
@@ -132,28 +146,3 @@ public class FirebaseAccess : MonoBehaviour
         else uIManager.Status.text = "";
     }
 }
-
-        /*void HandleValueChanged(object sender, ValueChangedEventArgs args)
-        {
-            if (args.DatabaseError != null)
-            {
-                Debug.LogError(args.DatabaseError.Message);
-                return;
-            }
-            //RetrieveDatas();
-            print("REFRESH");
-        }
-        private bool CheckInternet()
-        {
-            if (Application.internetReachability == NetworkReachability.NotReachable)
-            {
-               Debug.Log("Error. Check internet connection!");
-               return false;
-            }
-            return true;
-        }
-        private void OnDestroy()
-        {
-            databaseReference = null;
-            _ref = null;
-        }*/
